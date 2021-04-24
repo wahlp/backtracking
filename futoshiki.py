@@ -2,12 +2,7 @@ import pygame
 import random
 from itertools import cycle
 
-WINDOW_HEIGHT = 500
-WINDOW_WIDTH = 500
-
-blockSize = 100 #Set the size of the grid block
-blockBorder = 25
-
+# colors
 BLACK           = (0, 0, 0)
 DARKER_GREY     = (50, 50, 50)
 DARK_GREY       = (100, 100, 100)
@@ -15,6 +10,28 @@ GREY            = (150, 150, 150)
 LIGHT_GREY      = (200, 200, 200)
 LIGHTER_GREY    = (220, 220, 220)
 WHITE           = (255, 255, 255)
+
+# pygame event.key:value mapping
+keyMappings = {
+    pygame.K_1: 1,
+    pygame.K_2: 2,
+    pygame.K_3: 3,
+    pygame.K_4: 4,
+    pygame.K_5: 5,
+    pygame.K_6: 6,
+    pygame.K_7: 7,
+    pygame.K_8: 8,
+    pygame.K_9: 9,
+    pygame.K_BACKSPACE: ''
+}
+
+# pygame window 
+
+WINDOW_HEIGHT = 500
+WINDOW_WIDTH = 500
+
+blockSize = 100 # size of the grid cell
+blockBorder = 25
 
 pygame.init()
 pygame.font.init()
@@ -194,23 +211,6 @@ class Grid:
 
         return self.inequalities
 
-    # def getInequalities(self):
-    #     # [4, 4, 4, 4, 4] vertical
-    #     # [5, 5, 5, 5] horizontal
-    #     # always left to right
-    #     down = self.height * (self.width - 1) # vertical
-    #     across = (self.height - 1) * self.width # horizontal
-
-    #     for index, ineq in enumerate(self.inequalities):
-    #         row = index // (self.width - 1)
-    #         if row < self.height: # vertical
-    #             print(f"down: {row}")
-    #             pass
-    #         else: # horizontal
-    #             col = (index - down) // self.width
-    #             print(f"across: {col}")
-    #         print(ineq.neighbouringCells)
-
     def linkCellsToInequalities(self):
         for index, cell in enumerate(self.cells):
             # find ineq with pos in ineq.neighbouringCells
@@ -241,17 +241,6 @@ class Grid:
             return 'left'
         if pos1[1] > pos2[1]: # pos1 is to the right of pos2
             return 'right'
-
-    # def getValues(self):
-    #     width = int(WINDOW_WIDTH / blockSize)
-    #     values = [cell.val for cell in self.cells]
-    #     gridValues = [values[i:i + width] for i in range(0, len(values), width)] # chunk into grid with (width) values in each row
-    #     return gridValues # 2d list
-
-    # def setValues(self, values): # takes 2d list
-    #     values = [b for a in values for b in a] # unwrap to 1d 
-    #     for index, v in enumerate(values):
-    #         self.cells[index].val = v
 
     def validateCell(self, cell, setColor=True):
         # if cell.val == '':
@@ -407,26 +396,8 @@ def main():
                         highlightTarget = ineq
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    val = 1
-                if event.key == pygame.K_2:
-                    val = 2    
-                if event.key == pygame.K_3:
-                    val = 3
-                if event.key == pygame.K_4:
-                    val = 4
-                if event.key == pygame.K_5:
-                    val = 5
-                if event.key == pygame.K_6:
-                    val = 6 
-                if event.key == pygame.K_7:
-                    val = 7
-                if event.key == pygame.K_8:
-                    val = 8
-                if event.key == pygame.K_9:
-                    val = 9
-                if event.key == pygame.K_BACKSPACE:
-                    val = ''
+                if event.key in keyMappings.keys():
+                    val = keyMappings[event.key]
 
                 # debugging
                 if event.key == pygame.K_SPACE:
