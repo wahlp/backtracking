@@ -71,6 +71,7 @@ class Cell(Rect):
         self.colorPalette = (DARK_GREY, LIGHT_GREY)
         self.color = self.colorPalette[1] # 0 == highlight color, 1 == unhighlighted color
         self.inequalities = {}
+        self.isValid = True
 
     def colorByValidity(self, valid, highlight=True):
         paletteIndex = (not highlight) * 1 # 0 if True, 1 if False
@@ -137,6 +138,8 @@ class Cell(Rect):
 
             leftCell.colorByValidity(validFlag, highlight=False)
             rightCell.colorByValidity(validFlag, highlight=False)
+
+            self.isValid = validFlag
         
         return validFlag
 
@@ -251,34 +254,47 @@ class Grid:
             posToCheck = (cell.position[0], i)
             cellToCheck = self.positions[posToCheck]
             if cellToCheck != cell:
-                if cellToCheck.val == cell.val: # same value in row
-                    validFlag = False
-                    if setColor:
-                        cellToCheck.colorByValidity(False, highlight=False)
+                # if cellToCheck.val == cell.val: # same value in row
+                #     validFlag = False
+                #     if setColor:
+                #         cellToCheck.colorByValidity(False, highlight=False)
 
-                # to correct previously invalid cells
-                # however, will trigger different branches if coming from validateGrid
+                # else: # different value in cellToCheck
+                #     # still need to check if cellToCheck was already invalid
+                #     if setColor:
+                #         cellToCheck.colorByValidity(True, highlight=False)
+                isRepeatValue = cellToCheck.val == cell.val
+                if isRepeatValue:
+                    validFlag = False
+                    validity = False
                 else:
-                    if setColor:
-                        cellToCheck.colorByValidity(True, highlight=False)
+                    validity = cellToCheck.isValid
+
+                if setColor:
+                    cellToCheck.colorByValidity(validity, highlight=False)
+
 
         # check col - (1, 0), (2, 0), etc
         for i in range(self.height):
             posToCheck = (i, cell.position[1])
             cellToCheck = self.positions[posToCheck]
             if cellToCheck != cell:
-                if cellToCheck.val == cell.val: # same value in col
+                isRepeatValue = cellToCheck.val == cell.val
+                if isRepeatValue:
                     validFlag = False
-                    if setColor:
-                        cellToCheck.colorByValidity(False, highlight=False)
+                    otherCellValidity = False
                 else:
-                    if setColor:
-                        cellToCheck.colorByValidity(True, highlight=False)
+                    otherCellValidity = cellToCheck.isValid
+
+                if setColor:
+                    cellToCheck.colorByValidity(otherCellValidity, highlight=False)
 
         # check inequalities
         ineqResult = cell.validateInequalities(self)
         if not ineqResult:
             validFlag = False
+
+        cell.isValid = validFlag
 
         return validFlag
 
