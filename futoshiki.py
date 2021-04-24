@@ -5,16 +5,16 @@ from itertools import cycle
 WINDOW_HEIGHT = 500
 WINDOW_WIDTH = 500
 
-BLACK = (0, 0, 0)
-DARKER_GREY = (50, 50, 50)
-DARK_GREY = (100, 100, 100)
-GREY = (150, 150, 150)
-LIGHT_GREY = (200, 200, 200)
-LIGHTER_GREY = (220, 220, 220)
-WHITE = (255, 255, 255)
-
 blockSize = 100 #Set the size of the grid block
 blockBorder = 25
+
+BLACK           = (0, 0, 0)
+DARKER_GREY     = (50, 50, 50)
+DARK_GREY       = (100, 100, 100)
+GREY            = (150, 150, 150)
+LIGHT_GREY      = (200, 200, 200)
+LIGHTER_GREY    = (220, 220, 220)
+WHITE           = (255, 255, 255)
 
 pygame.init()
 pygame.font.init()
@@ -187,6 +187,7 @@ class Grid:
                 position = (i+0.5, j)
                 x = blockSize * j + blockBorder/2
                 y = blockSize * (i + 1) - blockBorder/2
+
                 inequalityRect = pygame.Rect(x, y, blockSize-blockBorder, blockBorder) # create rect
                 inequality_sign = InequalitySign(inequalityRect, position, neighbouringCells, True) # use rect to create inequalitysign
                 self.inequalities.append(inequality_sign) # add inequalitysign to self.inequalities
@@ -319,7 +320,7 @@ class Grid:
             print(f"Evaluation for Cell @ {cell.position}: {cellEvaluation}")
 
         for cellResult, cell in zip(cellsValidity, self.cells):
-            # cell.colorByValidity(cellResult, highlight=False)
+            # setting color this way is not permanent, will disappear after clicking
             if cellResult:
                 cell.color = (0, 200, 0)
             else:
@@ -391,6 +392,7 @@ def main():
                     if cell.rect.collidepoint(event.pos): # clicked on this rect
                         if highlightTarget:
                             highlightTarget.unhighlight() # unhighlight prev cell
+                            
                         cell.highlight()
                         highlightTarget = cell
 
@@ -400,10 +402,9 @@ def main():
                             highlightTarget.unhighlight()
                         if highlightTarget == ineq: # second click on this ineq
                             ineq.cycleState()
-                        ineq.highlight()
 
+                        ineq.highlight()
                         highlightTarget = ineq
-                        # grid.getInequalities()
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
@@ -435,8 +436,7 @@ def main():
                         print(f"Evaluation for {highlightTarget.position}: {result}")
                         if result:
                             highlightTarget.color = (0, 200, 0)
-                        # else:
-                        #     highlightTarget.color = (200, 0, 0)
+                        # if invalid, it would already be identified in red
 
                 if event.key == pygame.K_TAB:
                     print('tab')
