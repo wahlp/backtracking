@@ -436,7 +436,8 @@ def main():
                         print(f"Evaluation for {highlightTarget.position}: {result}")
                         if result:
                             highlightTarget.color = (0, 200, 0)
-                        # if invalid, it would already be identified in red
+                        else:
+                            highlightTarget.color = (200, 0, 0)
 
                 if event.key == pygame.K_TAB:
                     print('tab')
