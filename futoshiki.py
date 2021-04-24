@@ -248,21 +248,11 @@ class Grid:
         #     return False
         validFlag = True
 
-        # example: cell.position = (0, 0)
-        # check row - (0, 1), (0, 2), etc
+        # check row
         for i in range(self.width):
             posToCheck = (cell.position[0], i)
             cellToCheck = self.positions[posToCheck]
             if cellToCheck != cell:
-                # if cellToCheck.val == cell.val: # same value in row
-                #     validFlag = False
-                #     if setColor:
-                #         cellToCheck.colorByValidity(False, highlight=False)
-
-                # else: # different value in cellToCheck
-                #     # still need to check if cellToCheck was already invalid
-                #     if setColor:
-                #         cellToCheck.colorByValidity(True, highlight=False)
                 isRepeatValue = cellToCheck.val == cell.val
                 if isRepeatValue:
                     validFlag = False
@@ -273,8 +263,7 @@ class Grid:
                 if setColor:
                     cellToCheck.colorByValidity(validity, highlight=False)
 
-
-        # check col - (1, 0), (2, 0), etc
+        # check col
         for i in range(self.height):
             posToCheck = (i, cell.position[1])
             cellToCheck = self.positions[posToCheck]
