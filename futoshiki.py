@@ -311,7 +311,7 @@ class Grid:
 
         for index, cell in enumerate(self.cells):
             result = self.validateCell(cell, setColor=False)
-            cellEvaluation = not result or cell.val == ''
+            cellEvaluation = result and cell.val != ''
 
             if not cellEvaluation: # one invalid cell will invalidate the whole grid permanently
                 validFlag = False 
@@ -432,7 +432,7 @@ def main():
                 if event.key == pygame.K_SPACE:
                     print('spacebar')
                     if isinstance(highlightTarget, Cell):
-                        result = grid.validateCell(highlightTarget)
+                        result = grid.validateCell(highlightTarget, setColor=False)
                         print(f"Evaluation for {highlightTarget.position}: {result}")
                         if result:
                             highlightTarget.color = (0, 200, 0)
