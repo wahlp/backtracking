@@ -252,7 +252,7 @@ class Grid:
     #     for index, v in enumerate(values):
     #         self.cells[index].val = v
 
-    def validateCell(self, cell):
+    def validateCell(self, cell, setColor=True):
         # if cell.val == '':
         #     return False
         validFlag = True
@@ -264,13 +264,15 @@ class Grid:
             cellToCheck = self.positions[posToCheck]
             if cellToCheck != cell:
                 if cellToCheck.val == cell.val: # same value in row
-                    cellToCheck.colorByValidity(False, highlight=False)
                     validFlag = False
+                    if setColor:
+                        cellToCheck.colorByValidity(False, highlight=False)
 
                 # to correct previously invalid cells
                 # however, will trigger different branches if coming from validateGrid
                 else:
-                    cellToCheck.colorByValidity(True, highlight=False)
+                    if setColor:
+                        cellToCheck.colorByValidity(True, highlight=False)
 
         # check col - (1, 0), (2, 0), etc
         for i in range(self.height):
@@ -278,10 +280,12 @@ class Grid:
             cellToCheck = self.positions[posToCheck]
             if cellToCheck != cell:
                 if cellToCheck.val == cell.val: # same value in col
-                    cellToCheck.colorByValidity(False, highlight=False)
                     validFlag = False
+                    if setColor:
+                        cellToCheck.colorByValidity(False, highlight=False)
                 else:
-                    cellToCheck.colorByValidity(True, highlight=False)
+                    if setColor:
+                        cellToCheck.colorByValidity(True, highlight=False)
 
         # check inequalities
         ineqResult = cell.validateInequalities(self)
@@ -305,14 +309,14 @@ class Grid:
         cellsValidity = []
 
         for index, cell in enumerate(self.cells):
-            result = self.validateCell(cell)
-            print(f"Evaluation for Cell @ {cell.position}: {result}")
+            result = self.validateCell(cell, setColor=False)
+            cellEvaluation = not result or cell.val == ''
 
-            cellsValidity.append(result)
-            # cell.colorByValidity(result, highlight=False)
+            if not cellEvaluation: # one invalid cell will invalidate the whole grid permanently
+                validFlag = False 
 
-            if not result:
-                validFlag = False
+            cellsValidity.append(cellEvaluation)
+            print(f"Evaluation for Cell @ {cell.position}: {cellEvaluation}")
 
         for cellResult, cell in zip(cellsValidity, self.cells):
             # cell.colorByValidity(cellResult, highlight=False)
