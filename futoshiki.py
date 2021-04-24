@@ -125,22 +125,20 @@ class Cell(Rect):
             #     result = cellToVisit.validate(grid) # recursion
 
             # evaluate this cell's inequality
-            if v.val == '<': 
-                validFlag = leftCell.val < rightCell.val
-            elif v.val == '>':
-                validFlag = leftCell.val > rightCell.val
-            else: # there is no inequality rect is empty, skip
+            if v.val == '': # there is no inequality rect is empty, skip
                 continue
+            elif v.val == '<': 
+                evaluation = leftCell.val < rightCell.val
+            elif v.val == '>':
+                evaluation = leftCell.val > rightCell.val
+
+            if evaluation == False: # one invalid inequality affects the cell permanently
+                validFlag = False
 
             leftCell.colorByValidity(validFlag, highlight=False)
             rightCell.colorByValidity(validFlag, highlight=False)
         
         return validFlag
-
-        # if goodEvaluation:
-        #   return True
-        # else:
-        #   return False
 
 class InequalitySign(Rect):
     def __init__(self, rect, position, neighbouringCells, horizontal):
