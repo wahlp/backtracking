@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 from itertools import cycle
 
 # colors
@@ -304,41 +305,49 @@ class Grid:
 
         return validFlag
 
-def solve(grid, i, j):
-    while grid[i][j]!= 0:
-        if i<4:
-            i+= 1
-        elif i == 4 and j<4:
-            i = 0
-            j+= 1
-        elif i == 4 and j == 4:
-            return True
-    pygame.event.pump()    
-    for it in range(1, 6): # check all possible values
-        # if valid(grid, i, j, it)== True: # use first valid value found
-        if grid.validateCell(cell):
-            grid[i][j]= it
-            global x, y
-            x = i
-            y = j
-            # white color background\
-            screen.fill((255, 255, 255))
-            draw()
-            draw_box()
-            pygame.display.update()
-            pygame.time.delay(20)
-            if solve(grid, i, j)== 1: # recurse as long as true
+    def solve(self, i, j):
+        # manage position of currently focused cell
+        while self.positions[(i, j)].val != '':
+            if j < self.width - 1: # move right
+                j += 1
+            elif j == self.width - 1 and i < self.height - 1: # move to next row
+                j = 0
+                i += 1
+            elif j == self.width - 1 and i == self.height - 1: # end of grid
                 return True
-            else: # recursion returned false, backtrack
-                grid[i][j]= 0
-            # white color background\
-            screen.fill((255, 255, 255))
-          
-            draw()
-            draw_box()
-            pygame.display.update()
-            pygame.time.delay(50)    
-    return False  # no solution found, return false
+
+        # print(i, j)
+        cell = self.positions[(i, j)]
+
+        pygame.event.pump()
+
+        for value in range(1, self.width + 1): # check all possible values
+            cell.val = value
+
+            if self.validateCell(cell) == True: # use first valid value found
+                print(f"settled on {value} for {(i, j)}")
+                
+                self.draw() # redraw grid
+                # draw_box() # highlight current cell
+
+                pygame.display.update()
+                pygame.time.delay(20)
+
+                if self.solve(i, j) == True: # recurse as long as true
+                    return True
+                else: # recursion returned false, backtrack
+                    cell.val = ''
+            
+                self.draw() # redraw grid
+                # draw_box() # highlight current cell
+
+                pygame.display.update()
+                pygame.time.delay(50)
+
+        cell.val = ''
+        print(f"exhausted solutions for {(i, j)}")
+
+        return False  # no solution found, return false
 
 def main():
     global SCREEN, CLOCK
@@ -400,6 +409,18 @@ def main():
                 if event.key == pygame.K_TAB:
                     print('tab')
                     grid.randomSetup()
+
+                if event.key == pygame.K_F1:
+                    print('f1')
+                    t0 = time.time()
+                    solution = grid.solve(0, 0)
+                    t1 = time.time()
+
+                    duration = round(t1-t0, 2)
+                    if solution:
+                        print(f'Solved in {duration} seconds')
+                    else:
+                        print(f'Confirmed impossible in {duration} seconds')
 
             # the highlighted cell is receiving an input value
             if isinstance(highlightTarget, Cell) and val != None:
