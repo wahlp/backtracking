@@ -73,15 +73,15 @@ class Cell(Rect):
         self.inequalities = {}
         self.isValid = None
 
-    def colorByValidity(self, valid, highlight=True):
-        paletteIndex = (not highlight) * 1 # 0 if True, 1 if False
+    def setValidState(self, state):
+        self.isValid = state
 
-        if valid == False:
-            self.colorPalette = ((150, 0, 0), (200, 0, 0))
-        elif valid == True or valid == None:
+        if state == True or state == None:
             self.colorPalette = (DARK_GREY, LIGHT_GREY)
+        elif state == False:
+            self.colorPalette = ((150, 0, 0), (200, 0, 0))
 
-        self.color = self.colorPalette[paletteIndex]
+        return self
 
     # def validate(self, grid, visitedBefore=[]):
     def validateInequalities(self, grid):
@@ -136,10 +136,8 @@ class Cell(Rect):
             if evaluation == False: # one invalid inequality affects the cell permanently
                 validFlag = False
 
-            leftCell.colorByValidity(validFlag, highlight=False)
-            rightCell.colorByValidity(validFlag, highlight=False)
-
-            self.isValid = validFlag
+            leftCell.setValidState(validFlag)
+            rightCell.setValidState(validFlag)
         
         return validFlag
 
@@ -245,35 +243,30 @@ class Grid:
 
     def validateCell(self, cell, setColor=True):
         if cell.val == '':
-            return None
+            validFlag = None
+        else:
+            validFlag = True
 
-        validFlag = True
+            posList = []         
+            for i in range(self.width): # check row
+                posList.append( (cell.position[0], i) )
+            for i in range(self.height): # check col
+                posList.append( (i, cell.position[1]) )
+                
+            for posToCheck in posList:
+                cellToCheck = self.positions[posToCheck]
+                if cellToCheck != cell:
+                    isRepeatValue = cellToCheck.val == cell.val
+                    if isRepeatValue:
+                        validFlag = False
+                        cellToCheck.setValidState(False)
 
-        posList = []         
-        for i in range(self.width): # check row
-            posList.append( (cell.position[0], i) )
-        for i in range(self.height): # check col
-            posList.append( (i, cell.position[1]) )
-            
-        for posToCheck in posList:
-            cellToCheck = self.positions[posToCheck]
-            if cellToCheck != cell:
-                isRepeatValue = cellToCheck.val == cell.val
-                if isRepeatValue:
-                    validFlag = False
-                    cellToCheck.isValid = False
+            # check inequalities
+            ineqResult = cell.validateInequalities(self)
+            if not ineqResult:
+                validFlag = False
 
-                otherCellValidity = cellToCheck.isValid
-
-                if setColor:
-                    cellToCheck.colorByValidity(otherCellValidity, highlight=False)
-
-        # check inequalities
-        ineqResult = cell.validateInequalities(self)
-        if not ineqResult:
-            validFlag = False
-
-        cell.isValid = validFlag
+        cell.setValidState(validFlag)
 
         return validFlag
 
@@ -293,9 +286,10 @@ class Grid:
 
         for index, cell in enumerate(self.cells):
             result = self.validateCell(cell, setColor=False)
+
             cellEvaluation = result and cell.val != ''
 
-            if not cellEvaluation: # one invalid cell will invalidate the whole grid permanently
+            if cellEvaluation == False: # one invalid cell will invalidate the whole grid permanently
                 validFlag = False 
 
             cellsValidity.append(cellEvaluation)
