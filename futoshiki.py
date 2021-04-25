@@ -71,14 +71,14 @@ class Cell(Rect):
         self.colorPalette = (DARK_GREY, LIGHT_GREY)
         self.color = self.colorPalette[1] # 0 == highlight color, 1 == unhighlighted color
         self.inequalities = {}
-        self.isValid = True
+        self.isValid = None
 
     def colorByValidity(self, valid, highlight=True):
         paletteIndex = (not highlight) * 1 # 0 if True, 1 if False
 
-        if not valid:
+        if valid == False:
             self.colorPalette = ((150, 0, 0), (200, 0, 0))
-        else:
+        elif valid == True or valid == None:
             self.colorPalette = (DARK_GREY, LIGHT_GREY)
 
         self.color = self.colorPalette[paletteIndex]
@@ -244,8 +244,9 @@ class Grid:
             return 'right'
 
     def validateCell(self, cell, setColor=True):
-        # if cell.val == '':
-        #     return False
+        if cell.val == '':
+            return None
+
         validFlag = True
 
         posList = []         
@@ -260,9 +261,9 @@ class Grid:
                 isRepeatValue = cellToCheck.val == cell.val
                 if isRepeatValue:
                     validFlag = False
-                    otherCellValidity = False
-                else:
-                    otherCellValidity = cellToCheck.isValid
+                    cellToCheck.isValid = False
+
+                otherCellValidity = cellToCheck.isValid
 
                 if setColor:
                     cellToCheck.colorByValidity(otherCellValidity, highlight=False)
@@ -302,9 +303,9 @@ class Grid:
 
         for cellResult, cell in zip(cellsValidity, self.cells):
             # setting color this way is not permanent, will disappear after clicking
-            if cellResult:
+            if cellResult == True:
                 cell.color = (0, 200, 0)
-            else:
+            elif cellResult == False:
                 cell.color = (200, 0, 0)
 
         return validFlag
@@ -397,9 +398,9 @@ def main():
                     if isinstance(highlightTarget, Cell):
                         result = grid.validateCell(highlightTarget, setColor=False)
                         print(f"Evaluation for {highlightTarget.position}: {result}")
-                        if result:
+                        if result == True:
                             highlightTarget.color = (0, 200, 0)
-                        else:
+                        elif result == False:
                             highlightTarget.color = (200, 0, 0)
 
                 if event.key == pygame.K_TAB:
