@@ -406,21 +406,13 @@ def main():
                 if event.key == pygame.K_TAB:
                     print('tab')
                     grid.randomSetup()
-                
-                # debugging
-                if event.key == pygame.K_F1:
-                    print('f1')
-                    result = grid.validateGrid()
-                    print(f"Evaluation for Grid: {result}")
-
 
             # the highlighted cell is receiving an input value
             if isinstance(highlightTarget, Cell) and val != None:
                 print(val)
                 highlightTarget.val = val
-                if val != '':
-                    result = grid.validateCell(highlightTarget)
-                    highlightTarget.colorByValidity(result)
+                result = grid.validateGrid()
+                print(f"Evaluation for Grid: {result}")
 
         pygame.display.update()
 
