@@ -329,20 +329,17 @@ class Grid:
                 cell.highlight()
                 
                 self.draw() # redraw grid
-                # draw_box() # highlight current cell
 
                 pygame.display.update()
                 pygame.time.delay(20)
 
                 cell.unhighlight()
 
-                if self.solve(i, j) == True: # recurse as long as true
+                if self.solve(i, j) == True: # recursion: will move to next empty cell
                     return True
-                else: # recursion returned false, backtrack
-                    cell.val = ''
+                # else: # recursion returned false, backtrack
             
                 self.draw() # redraw grid
-                # draw_box() # highlight current cell
 
                 pygame.display.update()
                 pygame.time.delay(50)
