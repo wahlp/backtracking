@@ -260,14 +260,13 @@ class Grid:
                     isRepeatValue = cellToCheck.val == cell.val
                     if isRepeatValue:
                         validFlag = False
-                        cellToCheck.setValidState(False)
 
             # check inequalities
             ineqResult = cell.validateInequalities(self)
             if not ineqResult:
                 validFlag = False
 
-        cell.setValidState(validFlag)
+        # cell.setValidState(validFlag)
 
         return validFlag
 
@@ -326,12 +325,16 @@ class Grid:
 
             if self.validateCell(cell) == True: # use first valid value found
                 print(f"settled on {value} for {(i, j)}")
+                cell.setValidState(True)
+                cell.highlight()
                 
                 self.draw() # redraw grid
                 # draw_box() # highlight current cell
 
                 pygame.display.update()
                 pygame.time.delay(20)
+
+                cell.unhighlight()
 
                 if self.solve(i, j) == True: # recurse as long as true
                     return True
@@ -346,6 +349,7 @@ class Grid:
 
         cell.val = ''
         print(f"exhausted solutions for {(i, j)}")
+        cell.setValidState(None)
 
         return False  # no solution found, return false
 
